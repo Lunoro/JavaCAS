@@ -8,13 +8,9 @@ import java.awt.*;
 public class Main {
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-
-            @Override
-            public void run() {
-                CartesianFrame cartesianFrame = new CartesianFrame();
-                cartesianFrame.showUI();
-            }
+        SwingUtilities.invokeLater(() -> {
+            CartesianFrame cartesianFrame = new CartesianFrame();
+            cartesianFrame.showUI();
         });
     }
 

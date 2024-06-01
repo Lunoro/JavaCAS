@@ -2,21 +2,15 @@ package de.schurer.cartesian;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 public class CartesianFrame extends JFrame {
     CartesianPanel cartesianPanel;
 
-    double f (double x) {
-        return x +1;
-    }
-
     public CartesianFrame() {
-        cartesianPanel = new CartesianPanel();
+        cartesianPanel = new CartesianPanel(this);
         add(cartesianPanel);
-
-        for (int i = 0; i < 8; i++) {
-            cartesianPanel.drawPoint(new Point(i, (int) f(i)));
-        }
     }
 
     public void showUI() {
@@ -24,9 +18,14 @@ public class CartesianFrame extends JFrame {
         setTitle("Cartesian");
         setMinimumSize(new Dimension(700, 700));
         setVisible(true);
+
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                System.out.println("Resized");
+            }
+        });
     }
 
-    public CartesianPanel getCartesianPanel() {
-        return cartesianPanel;
-    }
+
 }

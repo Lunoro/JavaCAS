@@ -2,10 +2,18 @@ package de.schurer.cartesian;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CartesianPanel extends JPanel {
+
+    private final JFrame frame;
+
+    public CartesianPanel(JFrame frame) {
+        this.frame = frame;
+    }
 
     private List<Point> points = new ArrayList<>();
 
@@ -72,7 +80,6 @@ public class CartesianPanel extends JPanel {
         }
 
         points.forEach(point -> drawPointOnPanel(point, g2));
-
 
     }
 }
