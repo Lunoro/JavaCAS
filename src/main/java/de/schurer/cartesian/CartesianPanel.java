@@ -23,63 +23,82 @@ public class CartesianPanel extends JPanel {
     }
 
     // x-axis
-    public static final int X_FIRST_CORD = 50;
-    public static final int X_SECOND_CORD = 600;
-    public static final int X_CORD_Y_CORD = 600;
+    private int xStartingPoint = 50;
+    private int xDestinationPoint = 600;
+    private int xHeight = 600;
 
     // y-axis
-    public static final int Y_FIRST_CORD = 50;
-    public static final int Y_SECOND_CORD = 600;
-    public static final int Y_CORD_X_CORD = 50;
+    private int yStartingPoint = 50;
+    private int yDestinationPoint = 600;
+    private int yWidth = 50;
 
-    // size of start coordinate lenght
-    public static final int ORIGIN_COORDINATE_LENGHT = 6;
+    private final int AXIS_NUMERATION_DISTANCE = 5;
 
-    // distance of coordinate strings from axis
-    public static final int AXIS_STRING_DISTANCE = 1;
-
-    public static final int FIRST_LENGHT = 10;
-    public static final int SECOND_LENGHT = 5;
-
-    private void drawPointOnPanel(Point point, Graphics g) {
+    private void drawPointOnPanel(Point point, Graphics g, int xScale, int yScale) {
         final int pointDiameter = 5;
-        final int x = X_FIRST_CORD + point.x * ((X_SECOND_CORD - X_FIRST_CORD) / 10);
-        final int y = X_CORD_Y_CORD - point.y * ((X_SECOND_CORD - X_FIRST_CORD) / 10);
+        final int x = xStartingPoint + point.x * ((xDestinationPoint - xStartingPoint) / xScale);
+        final int y = xHeight - point.y * ((yDestinationPoint - yStartingPoint) / yScale);
         g.fillOval(x, y, pointDiameter, pointDiameter);
-
     }
 
-    //Draws the Cartesian Plane
-    //TODO: refactor this mess
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+
+        xDestinationPoint = (int) frame.getSize().getWidth() - 100;
+        yDestinationPoint = (int) frame.getSize().getHeight() - 100;
+        xHeight = (int) frame.getSize().getHeight() - 100;
 
         Graphics2D g2 = (Graphics2D) g;
 
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        //x-axis
-        g2.drawLine(X_FIRST_CORD, X_CORD_Y_CORD, X_SECOND_CORD, X_CORD_Y_CORD);
-        //y-axis
-        g2.drawLine(Y_CORD_X_CORD, Y_FIRST_CORD, Y_CORD_X_CORD, Y_SECOND_CORD);
+        int numberAmountXAxis = (int) (frame.getSize().getWidth() / 50);
+        int numberAmountYAxis = (int) (frame.getSize().getHeight() / 50);
+        ;
+        int lengthXAxis = (xDestinationPoint - xStartingPoint) / numberAmountXAxis;
+        int lengthYAxis = (yDestinationPoint - yStartingPoint) / numberAmountYAxis;
 
-        int xCordNumbers = 10;
-        int yCordNumbers = 10;
-        int xLength = (X_SECOND_CORD - X_FIRST_CORD) / xCordNumbers;
-        int yLength = (Y_SECOND_CORD - Y_FIRST_CORD) / yCordNumbers;
+        //draws the x-axis based on the start and destination which are updated by the resize event and numerates it
 
-        for (int i = 1; i < xCordNumbers; i++) {
-            g2.drawLine(X_FIRST_CORD + (i * xLength), X_CORD_Y_CORD - SECOND_LENGHT, X_FIRST_CORD + (i * xLength),
-                    X_CORD_Y_CORD + SECOND_LENGHT);
-            g2.drawString(Integer.toString(i), X_FIRST_CORD + (i * xLength), (X_CORD_Y_CORD - SECOND_LENGHT) + 20);
+        g2.drawLine(xStartingPoint, xHeight, xDestinationPoint, xHeight);
+
+        for (int i = 1; i < numberAmountXAxis; i++) {
+            g2.drawLine(xStartingPoint + (i * lengthXAxis), xHeight - AXIS_NUMERATION_DISTANCE, xStartingPoint + (i * lengthXAxis),
+                    xHeight + AXIS_NUMERATION_DISTANCE);
+            g2.drawString(Integer.toString(i), xStartingPoint + (i * lengthXAxis), (xHeight - AXIS_NUMERATION_DISTANCE) + 20);
         }
 
-        for (int i = 1; i < yCordNumbers; i++) {
-            g2.drawLine(Y_CORD_X_CORD - SECOND_LENGHT, Y_FIRST_CORD + (i * xLength), Y_CORD_X_CORD + SECOND_LENGHT, Y_FIRST_CORD + (i * xLength));
-            g2.drawString(Integer.toString(10 - i), (Y_CORD_X_CORD - SECOND_LENGHT) - 10, Y_FIRST_CORD + (i * xLength));
+        //draws the y-axis based on the start and destination which are updated by the resize event and numerates it
+
+        g2.drawLine(yWidth, yStartingPoint, yWidth, yDestinationPoint);
+
+        for (int i = 1; i < numberAmountYAxis; i++) {
+            //draws y-axis from top to bottom to improve tracing of points
+            g2.drawLine(yWidth - AXIS_NUMERATION_DISTANCE, yDestinationPoint - (i * lengthYAxis), yWidth + AXIS_NUMERATION_DISTANCE, yDestinationPoint - (i * lengthYAxis));
+            g2.drawString(Integer.toString(numberAmountYAxis - i), (yWidth - AXIS_NUMERATION_DISTANCE) - 10, yStartingPoint + (i * lengthYAxis));
         }
 
-        points.forEach(point -> drawPointOnPanel(point, g2));
+        updatePoints(numberAmountXAxis, numberAmountYAxis, g2);
+    }
 
+    private void updatePoints(int numberAmountXAxis, int numberAmountYAxis, Graphics2D g2) {
+        for (int i = 0; i < numberAmountXAxis; i++) {
+            if (points.size() > i) {
+                Point point = points.get(i);
+                if (point.y < numberAmountYAxis) {
+                    drawPointOnPanel(point, g2, numberAmountXAxis, numberAmountYAxis);
+                }
+            }
+        }
+    }
+
+    //don't know where to store it
+    private void resizeListener() {
+        frame.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                paintComponent(frame.getGraphics());
+            }
+        });
     }
 }
