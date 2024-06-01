@@ -34,13 +34,6 @@ public class CartesianPanel extends JPanel {
 
     private final int AXIS_NUMERATION_DISTANCE = 5;
 
-    private void drawPointOnPanel(Point point, Graphics g, int xScale, int yScale) {
-        final int pointDiameter = 5;
-        final int x = xStartingPoint + point.x * ((xDestinationPoint - xStartingPoint) / xScale);
-        final int y = xHeight - point.y * ((yDestinationPoint - yStartingPoint) / yScale);
-        g.fillOval(x, y, pointDiameter, pointDiameter);
-    }
-
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
@@ -59,7 +52,6 @@ public class CartesianPanel extends JPanel {
         int lengthYAxis = (yDestinationPoint - yStartingPoint) / numberAmountYAxis;
 
         //draws the x-axis based on the start and destination which are updated by the resize event and numerates it
-
         g2.drawLine(xStartingPoint, xHeight, xDestinationPoint, xHeight);
 
         for (int i = 1; i < numberAmountXAxis; i++) {
@@ -69,7 +61,6 @@ public class CartesianPanel extends JPanel {
         }
 
         //draws the y-axis based on the start and destination which are updated by the resize event and numerates it
-
         g2.drawLine(yWidth, yStartingPoint, yWidth, yDestinationPoint);
 
         for (int i = 1; i < numberAmountYAxis; i++) {
@@ -90,6 +81,13 @@ public class CartesianPanel extends JPanel {
                 }
             }
         }
+    }
+
+    private void drawPointOnPanel(Point point, Graphics g, int xScale, int yScale) {
+        final int pointDiameter = 5;
+        final int x = xStartingPoint + point.x * ((xDestinationPoint - xStartingPoint) / xScale);
+        final int y = xHeight - point.y * ((yDestinationPoint - yStartingPoint) / yScale);
+        g.fillOval(x, y, pointDiameter, pointDiameter);
     }
 
     //don't know where to store it
