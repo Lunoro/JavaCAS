@@ -9,14 +9,14 @@ public class CartesianFrame extends JFrame {
     CartesianPanel cartesianPanel;
 
     double f (double x) {
-        return x +1;
+        return x*x;
     }
 
     public CartesianFrame() {
         cartesianPanel = new CartesianPanel(this);
         add(cartesianPanel);
 
-        for (int i = 0; i < 19; i++) {
+        for (int i = -5; i < 6; i++) {
             cartesianPanel.drawPoint(new Point(i, (int) f(i)));
         }
     }
@@ -27,6 +27,4 @@ public class CartesianFrame extends JFrame {
         setMinimumSize(new Dimension(700, 700));
         setVisible(true);
     }
-
-
 }
