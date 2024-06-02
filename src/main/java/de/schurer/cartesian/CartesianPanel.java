@@ -109,7 +109,7 @@ public class CartesianPanel extends JPanel {
 
     //TODO: refactor duplicated code
     private void drawPointOnPanel(Point point, Graphics g, int xScale, int yScale) {
-        final int pointDiameter = 5;
+        final int pointDiameter = 2;
         final int x = midX + point.x * ((xDestinationPoint - xStartingPoint) / xScale);
         final int y = xHeight - point.y * ((yDestinationPoint - yStartingPoint) / yScale);
         g.fillOval(x, y, pointDiameter, pointDiameter);
@@ -153,7 +153,6 @@ public class CartesianPanel extends JPanel {
             @Override
             public void componentResized(ComponentEvent e) {
                 paintComponent(frame.getGraphics());
-                System.out.println("Test");
             }
         });
     }

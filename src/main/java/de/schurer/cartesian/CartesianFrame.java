@@ -9,7 +9,7 @@ public class CartesianFrame extends JFrame {
     CartesianPanel cartesianPanel;
 
     double f (double x) {
-        return x*x;
+        return x*x*x*x + 3*x*x*x + x + 3;
     }
 
     public CartesianFrame() {
