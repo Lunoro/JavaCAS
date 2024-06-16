@@ -1,9 +1,13 @@
 package de.schurer.cartesian;
 
+import de.schurer.point.Point;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.geom.Arc2D;
+import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,12 +28,10 @@ public class CartesianPanel extends JPanel {
      */
 
     // x-axis
-    private int xStartingPoint = 50;
     private int xDestinationPoint = 600;
     private int xHeight = 600;
 
     // y-axis
-    private int yStartingPoint = 50;
     private int yDestinationPoint = 600;
     private int yWidth = 50;
 
@@ -37,13 +39,13 @@ public class CartesianPanel extends JPanel {
     private int midX = 350;
     private int midY = 350;
 
-    private final int AXIS_NUMERATION_DISTANCE = 5;
+    private static final int AXIS_NUMERATION_DISTANCE = 5;
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        xDestinationPoint = (int) frame.getSize().getWidth() - 50;
-        yDestinationPoint = (int) frame.getSize().getHeight() - 50;
+        xDestinationPoint = (int) frame.getSize().getWidth();
+        yDestinationPoint = (int) frame.getSize().getHeight();
         xHeight = (int) frame.getSize().getHeight() / 2;
         yWidth = (int) frame.getSize().getWidth() / 2;
 
@@ -57,8 +59,8 @@ public class CartesianPanel extends JPanel {
         int numberAmountXAxis = (int) (frame.getSize().getWidth() / 50);
         int numberAmountYAxis = (int) (frame.getSize().getHeight() / 25);
 
-        int lengthXAxis = (xDestinationPoint - xStartingPoint) / numberAmountXAxis;
-        int lengthYAxis = (yDestinationPoint - yStartingPoint) / numberAmountYAxis;
+        int lengthXAxis = (xDestinationPoint) / numberAmountXAxis;
+        int lengthYAxis = (yDestinationPoint) / numberAmountYAxis;
 
         drawXAxis(g2, numberAmountXAxis, lengthXAxis);
         drawYAxis(g2, numberAmountYAxis, lengthYAxis);
@@ -69,7 +71,7 @@ public class CartesianPanel extends JPanel {
     //TODO: refactor duplicated code
     private void drawXAxis(Graphics2D g2, int numberAmountXAxis, int lengthXAxis) {
         //draws the x-axis based on the start and destination which are updated by the resize event and numerates it
-        g2.drawLine(xStartingPoint, xHeight, xDestinationPoint, xHeight);
+        g2.drawLine(0, xHeight, xDestinationPoint, xHeight);
 
         for (int i = 0; i < numberAmountXAxis; i++) {
             g2.drawLine(midX + (i * lengthXAxis), xHeight - AXIS_NUMERATION_DISTANCE, midX + (i * lengthXAxis),
@@ -87,7 +89,7 @@ public class CartesianPanel extends JPanel {
     //TODO: refactor duplicated code
     private void drawYAxis(Graphics2D g2, int numberAmountYAxis, int lengthYAxis) {
         //draws the y-axis based on the start and destination which are updated by the resize event and numerates it
-        g2.drawLine(yWidth, yStartingPoint, yWidth, yDestinationPoint);
+        g2.drawLine(yWidth, 0, yWidth, yDestinationPoint);
 
         for (int i = 0; i < numberAmountYAxis; i++) {
             //draws y-axis from top to bottom to improve tracing of points
@@ -102,17 +104,19 @@ public class CartesianPanel extends JPanel {
         }
     }
 
-    public void drawPoint(Point point) {
+    public void drawPoint(de.schurer.point.Point point) {
         points.add(point);
         repaint();
     }
 
     //TODO: refactor duplicated code
-    private void drawPointOnPanel(Point point, Graphics g, int xScale, int yScale) {
+    private void drawPointOnPanel(Point point, Graphics2D g, int xScale, int yScale) {
         final int pointDiameter = 2;
-        final int x = midX + point.x * ((xDestinationPoint - xStartingPoint) / xScale);
-        final int y = xHeight - point.y * ((yDestinationPoint - yStartingPoint) / yScale);
-        g.fillOval(x, y, pointDiameter, pointDiameter);
+        final double x = midX + point.x * ((double) (xDestinationPoint) / xScale);
+        final double y = xHeight - point.y * ((double) (yDestinationPoint) / yScale);
+
+        Shape s = new Arc2D.Double(x, y, pointDiameter, pointDiameter, 0, 360, Arc2D.CHORD);
+        g.draw(s);
     }
 
     private void updatePoints(int numberAmountXAxis, int numberAmountYAxis, Graphics2D g2) {
@@ -137,13 +141,14 @@ public class CartesianPanel extends JPanel {
             Point lastPoint = points.get(i - 1);
             Point currentPoint = points.get(i);
 
-            final int lastPointX = midX + lastPoint.x * ((xDestinationPoint - xStartingPoint) / xScale);
-            final int lastPointY = xHeight - lastPoint.y * ((yDestinationPoint - yStartingPoint) / yScale);
+            final double lastPointX = lastPoint.getCartesianX(midX, xDestinationPoint, xScale);
+            final double lastPointY = lastPoint.getCartesianY(midY, yDestinationPoint, yScale);
 
-            final int currentPointX = midX + currentPoint.x * ((xDestinationPoint - xStartingPoint) / xScale);
-            final int currentPointY = xHeight - currentPoint.y * ((yDestinationPoint - yStartingPoint) / yScale);
+            final double currentPointX = currentPoint.getCartesianX(midX, xDestinationPoint, xScale);
+            final double currentPointY = currentPoint.getCartesianY(midY, yDestinationPoint, yScale);
 
-            g2.drawLine(lastPointX, lastPointY, currentPointX, currentPointY);
+            Shape s = new Line2D.Double(lastPointX, lastPointY, currentPointX, currentPointY);
+            g2.draw(s);
         }
     }
 
